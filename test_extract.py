@@ -1,4 +1,3 @@
-# Тест: повторяем реальную структуру quotes.toscrape.com/js и проверяем разбор
 from scraper import extract_quotes, find_next_url
 
 MOCK = '''<!DOCTYPE html><html><body>
