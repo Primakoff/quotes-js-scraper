@@ -1,20 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Quotes (JS) Scraper
-===================
-
-Парсер динамического сайта quotes.toscrape.com/js — учебной площадки, где
-цитаты рисует JavaScript. Обычный requests видит пустую страницу, поэтому
-данные мы достаём из JS-массива `var data = [...]`, встроенного в <script>.
-
-Это самый лёгкий и надёжный способ ("верхняя ступень лестницы"): не нужен
-ни Selenium, ни Playwright — данные уже лежат в исходном коде страницы.
-
-Запуск:
-    python scraper.py
-    python scraper.py --format json --delay 1.0 --max-pages 3
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -84,19 +67,15 @@ def extract_quotes(html: str) -> list[Quote]:
     if not script:
         return []
 
-    # (2) забираем массив от "var data = [" до первой "];"
-    #     (?s) включает режим DOTALL — точка matchает и переносы строк
     match = re.search(r"var data\s*=\s*(\[.*?\]);", script, re.DOTALL)
     if not match:
         return []
 
-    # (3) массив — это валидный JSON, парсим его обычным json.loads
     raw_quotes = json.loads(match.group(1))
 
     quotes: list[Quote] = []
     for q in raw_quotes:
         quotes.append(Quote(
-            # убираем типографские кавычки «“ ”» по краям текста
             text=q["text"].strip("\u201c\u201d\"").strip(),
             author=q["author"]["name"],
             tags="; ".join(q.get("tags", [])),
@@ -137,7 +116,7 @@ def scrape_all(start_url: str, delay: float, max_pages: int | None) -> list[Quot
 
         url = find_next_url(html, url)
         if url:
-            time.sleep(delay)  # вежливая пауза между запросами
+            time.sleep(delay) 
 
     return all_quotes
 
